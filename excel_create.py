@@ -11,6 +11,9 @@ passwords = open('passwords/token', 'r').read()
 
 host = "imap.gmail.com"
 download_folder = "imagens"
+xl_folder = "excel"
+xl_name = "Valores_imagem.xlsx"
+
 #verifica se o diretório imagens existe
 os.makedirs(download_folder, exist_ok=True)
 
@@ -35,10 +38,17 @@ for (uid, message) in messages:
             att_file = attach["filename"]
 
             if '.jpg' or '.png' in att_file:
+                #salva o nome e caminho do arquivo
+
                 download_path = f"{download_folder}/{att_file}"
+
+                #abre um arquivo em branco e abre ele no tipo bytes wb, o arquivp é fp e para adicionar o anexo
+                #fazemos a leitura e depois escrevemos encima do arquivo em branco
 
                 with open(download_path, 'wb') as fp:
                     fp.write(attach['content'].read())
+
+                #transcrevemos esse arquivo para o anexo achado assim podendo decodifica-lo
 
                 try:
                     barcode = BarcodeReader(download_path)
@@ -54,7 +64,10 @@ for (uid, message) in messages:
                 ws.cell(row=r, column=2).value = barcode
                 ws.cell(row=r, column=3).value = att_file
 
-wb.save("Codigosdebarras.xlsx")
+caminho = os.path.join(xl_folder,xl_name)
+
+wb.save(caminho)
+
 mail.logout()
 
 
